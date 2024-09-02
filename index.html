@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        input[type="text"] {
+            width: calc(100% - 120px);
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #stock-info {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Stock Information Lookup</h1>
+    </header>
+    
+    <main>
+        <div class="container">
+            <input type="text" id="ticker" placeholder="Enter stock ticker">
+            <button id="lookup-btn">Get Stock Info</button>
+            <div id="stock-info">
+                <!-- Stock information will be displayed here -->
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.getElementById('lookup-btn').addEventListener('click', () => {
+            const ticker = document.getElementById('ticker').value.toUpperCase();
+            if (!ticker) {
+                alert('Please enter a stock ticker.');
+                return;
+            }
+            
+            fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${ticker}`)
+                .then(response => response.json())
+                .then(data => {
+                    const stockInfo = data.quoteResponse.result[0];
+                    if (stockInfo) {
+                        document.getElementById('stock-info').innerHTML = `
+                            <h2>${stockInfo.longName} (${stockInfo.symbol})</h2>
+                            <p>Current Price: $${stockInfo.regularMarketPrice.toFixed(2)}</p>
+                            <p>Change: ${stockInfo.regularMarketChange.toFixed(2)} (${stockInfo.regularMarketChangePercent.toFixed(2)}%)</p>
+                            <p>Previous Close: $${stockInfo.regularMarketPreviousClose.toFixed(2)}</p>
+                        `;
+                    } else {
+                        document.getElementById('stock-info').innerHTML = `<p>No information available for ticker: ${ticker}</p>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('stock-info').innerHTML = `<p>Error fetching data: ${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
