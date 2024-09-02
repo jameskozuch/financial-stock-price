@@ -68,9 +68,18 @@
                 alert('Please enter a stock ticker.');
                 return;
             }
-            
-            fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${ticker}`)
-                .then(response => response.json())
+
+            // Use a CORS proxy to avoid CORS issues
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const apiUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${ticker}`;
+
+            fetch(proxyUrl + apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     const stockInfo = data.quoteResponse.result[0];
                     if (stockInfo) {
@@ -85,9 +94,11 @@
                     }
                 })
                 .catch(error => {
+                    console.error('Error fetching data:', error);
                     document.getElementById('stock-info').innerHTML = `<p>Error fetching data: ${error.message}</p>`;
                 });
         });
     </script>
 </body>
 </html>
+
