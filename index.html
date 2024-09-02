@@ -69,8 +69,16 @@
                 return;
             }
 
-            fetch(`https://jameskozuch.github.io/financial-stock-price/stock?ticker=${ticker}`)
-                .then(response => response.json())
+            // Replace with the actual URL of your Flask app
+            const apiUrl = `https://<your-flask-app-url>/stock?ticker=${ticker}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.error) {
                         document.getElementById('stock-info').innerHTML = `<p>Error: ${data.error}</p>`;
