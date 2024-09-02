@@ -69,10 +69,10 @@
                 return;
             }
 
-            const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-            const yahooFinanceUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${ticker}`;
+            const apiKey = 'YOUR_ALPHA_VANTAGE_API_KEY';  // Replace with your Alpha Vantage API key
+            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`;
 
-            fetch(proxyUrl + yahooFinanceUrl)
+            fetch(url)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -80,13 +80,13 @@
                     return response.json();
                 })
                 .then(data => {
-                    const stockInfo = data.quoteResponse.result[0];
+                    const stockInfo = data['Global Quote'];
                     if (stockInfo) {
                         document.getElementById('stock-info').innerHTML = `
-                            <h2>${stockInfo.longName} (${stockInfo.symbol})</h2>
-                            <p>Current Price: $${stockInfo.regularMarketPrice.toFixed(2)}</p>
-                            <p>Change: ${stockInfo.regularMarketChange.toFixed(2)} (${stockInfo.regularMarketChangePercent.toFixed(2)}%)</p>
-                            <p>Previous Close: $${stockInfo.regularMarketPreviousClose.toFixed(2)}</p>
+                            <h2>${stockInfo['01. symbol']}</h2>
+                            <p>Current Price: $${parseFloat(stockInfo['05. price']).toFixed(2)}</p>
+                            <p>Change: ${parseFloat(stockInfo['09. change']).toFixed(2)} (${parseFloat(stockInfo['10. change percent']).toFixed(2)}%)</p>
+                            <p>Previous Close: $${parseFloat(stockInfo['08. previous close']).toFixed(2)}</p>
                         `;
                     } else {
                         document.getElementById('stock-info').innerHTML = `<p>No information available for ticker: ${ticker}</p>`;
