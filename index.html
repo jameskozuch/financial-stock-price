@@ -69,28 +69,28 @@
                 return;
             }
 
-            const apiKey = 'YOUR_ALPHA_VANTAGE_API_KEY';  // Replace with your Alpha Vantage API key
-            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`;
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
+            fetch(`https://jameskozuch.github.io/financial-stock-price/stock?ticker=${ticker}`)
+                .then(response => response.json())
                 .then(data => {
-                    const stockInfo = data['Global Quote'];
-                    if (stockInfo) {
-                        document.getElementById('stock-info').innerHTML = `
-                            <h2>${stockInfo['01. symbol']}</h2>
-                            <p>Current Price: $${parseFloat(stockInfo['05. price']).toFixed(2)}</p>
-                            <p>Change: ${parseFloat(stockInfo['09. change']).toFixed(2)} (${parseFloat(stockInfo['10. change percent']).toFixed(2)}%)</p>
-                            <p>Previous Close: $${parseFloat(stockInfo['08. previous close']).toFixed(2)}</p>
-                        `;
-                    } else {
-                        document.getElementById('stock-info').innerHTML = `<p>No information available for ticker: ${ticker}</p>`;
+                    if (data.error) {
+                        document.getElementById('stock-info').innerHTML = `<p>Error: ${data.error}</p>`;
+                        return;
                     }
+
+                    document.getElementById('stock-info').innerHTML = `
+                        <h2>${data.longName} (${data.symbol})</h2>
+                        <p>Current Price: $${data.currentPrice.toFixed(2)}</p>
+                        <p>Change: $${data.change.toFixed(2)} (${data.changePercent.toFixed(2)}%)</p>
+                        <p>Previous Close: $${data.previousClose.toFixed(2)}</p>
+                        <p>1 Day Return: ${data.oneDayReturn.toFixed(2)}%</p>
+                        <p>1 Month Return: ${data.oneMonthReturn.toFixed(2)}%</p>
+                        <p>6 Month Return: ${data.sixMonthReturn.toFixed(2)}%</p>
+                        <p>YTD Return: ${data.ytdReturn.toFixed(2)}%</p>
+                        <p>1 Year Return: ${data.oneYearReturn.toFixed(2)}%</p>
+                        <p>5 Year Return: ${data.fiveYearReturn.toFixed(2)}%</p>
+                        <p>10 Year Return: ${data.tenYearReturn.toFixed(2)}%</p>
+                        <p>Max Return: ${data.maxReturn.toFixed(2)}%</p>
+                    `;
                 })
                 .catch(error => {
                     document.getElementById('stock-info').innerHTML = `<p>Error fetching data: ${error.message}</p>`;
