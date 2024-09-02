@@ -68,23 +68,17 @@
                 alert('Please enter a stock ticker.');
                 return;
             }
-
-            // Replace with the actual URL of your Flask app
-            const apiUrl = `https://<your-flask-app-url>/stock?ticker=${ticker}`;
-
+            
+            const apiUrl = `https://f35506fa-da51-4dc4-abab-1c0718ad67f8-00-nttp77jrocst.spock.replit.dev/stock?ticker=${ticker}`;
+            
             fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        document.getElementById('stock-info').innerHTML = `<p>Error: ${data.error}</p>`;
+                        document.getElementById('stock-info').innerHTML = `<p>Error fetching data: ${data.error}</p>`;
                         return;
                     }
-
+                    
                     document.getElementById('stock-info').innerHTML = `
                         <h2>${data.longName} (${data.symbol})</h2>
                         <p>Current Price: $${data.currentPrice.toFixed(2)}</p>
